@@ -176,11 +176,20 @@ namespace MultiQueueSimulation
                 Console.WriteLine(system.SimulationTable[i].CustomerNumber + " " + system.SimulationTable[i].AssignedServer.ID);
 
             }
+
             for (int i = 0; i < system.NumberOfServers; i++)
             {
-                system.Servers[i].IdleProbability = (system.SimulationTable[system.StoppingNumber - 1].EndTime - system.Servers[i].TotalWorkingTime) / (decimal)system.SimulationTable[system.StoppingNumber - 1].EndTime;
-                system.Servers[i].AverageServiceTime = (system.Servers[i].TotalWorkingTime) / numofcustomer[i];
-                system.Servers[i].Utilization = (system.Servers[i].TotalWorkingTime) / (decimal)system.SimulationTable[system.StoppingNumber - 1].EndTime;
+                try
+                {
+                    system.Servers[i].IdleProbability = (system.SimulationTable[system.StoppingNumber - 1].EndTime - system.Servers[i].TotalWorkingTime) / (decimal)system.SimulationTable[system.StoppingNumber - 1].EndTime;
+                }
+                catch(Exception ee) { system.Servers[i].IdleProbability=0; }
+                try
+                {
+                    system.Servers[i].AverageServiceTime = (system.Servers[i].TotalWorkingTime) / numofcustomer[i];
+                }
+                catch (Exception eee) { system.Servers[i].AverageServiceTime = 0; }
+                    system.Servers[i].Utilization = (system.Servers[i].TotalWorkingTime) / (decimal)system.SimulationTable[system.StoppingNumber - 1].EndTime;
             }
             int count = 0;
             while (startcus.Count != 0 && endcus.Count != 0)
@@ -204,8 +213,9 @@ namespace MultiQueueSimulation
             system.PerformanceMeasures.AverageWaitingTime = (sumqu / system.StoppingNumber);
             system.PerformanceMeasures.WaitingProbability = countofq / system.StoppingNumber;
             system.PerformanceMeasures.MaxQueueLength = count;
-            string result = TestingManager.Test(system, Constants.FileNames.TestCase1);
+            string result = TestingManager.Test(system, Constants.FileNames.TestCase2);
             MessageBox.Show(result);
+            system = new SimulationSystem();
 
 
         }
