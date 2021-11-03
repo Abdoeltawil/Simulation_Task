@@ -17,12 +17,13 @@ namespace MultiQueueSimulation
         [STAThread]
         static void Main()
         {
-
+            // input 
             SimulationSystem system = new SimulationSystem();
             system.NumberOfServers = 2;
             system.StoppingNumber = 100;
             system.StoppingCriteria = Enums.StoppingCriteria.NumberOfCustomers;
             system.SelectionMethod = Enums.SelectionMethod.HighestPriority;
+
             TimeDistribution timed = new TimeDistribution();
             timed.Time = 1;
             timed.Probability = 0.25m;
@@ -79,6 +80,10 @@ namespace MultiQueueSimulation
             s.TimeDistribution.Add(timed);
             system.Servers.Add(s);
             system.Servers[1].ID = 2;
+            
+            ////////////////////////////////////////////
+            // Calculating comulative propabilty and Range for calls. 
+            ////////////////////////////////////////////
             decimal sum = 0.00m;
             for (int i = 0; i < system.InterarrivalDistribution.Count; i++)
             {
@@ -90,6 +95,9 @@ namespace MultiQueueSimulation
                 Console.WriteLine(system.InterarrivalDistribution[i].MinRange);
                 Console.WriteLine(system.InterarrivalDistribution[i].MaxRange);
             }
+            /////////////////////////////////////////////
+            ///calculating comulative probabilty and range for servers.
+            /////////////////////////////////////////////
             for (int i = 0; i < system.Servers.Count; i++)
             {
                 sum = 0.00m;
@@ -104,6 +112,9 @@ namespace MultiQueueSimulation
                     Console.WriteLine(system.Servers[i].TimeDistribution[j].MaxRange);
                 }
             }
+            ///////////////////////////////////////
+            //// Tabel
+            ///////////////////////////////////////
             decimal sumqu = 0.0m, countofq = 0.0m;
             decimal[] numofcustomer = new decimal[system.NumberOfServers];
             Queue<decimal> startcus = new Queue<decimal>(), endcus = new Queue<decimal>();
@@ -118,24 +129,19 @@ namespace MultiQueueSimulation
                     if (system.SimulationTable[i].RandomInterArrival >= system.InterarrivalDistribution[k].MinRange && system.SimulationTable[i].RandomInterArrival <= system.InterarrivalDistribution[k].MaxRange)
                         system.SimulationTable[i].InterArrival = system.InterarrivalDistribution[k].Time;
                 }
-                if (i == 0)
-                {
-                    system.SimulationTable[i].ArrivalTime = 0;
-                }
-                else
+                if(i!=0)
                 {
                     system.SimulationTable[i].ArrivalTime = system.SimulationTable[i - 1].ArrivalTime + system.SimulationTable[i].InterArrival;
                 }
-                int min = 1000;
 
+
+                int min = 99999999 ;
                 for (int l = 0; l < system.Servers.Count; l++)
                 {
-                    if (system.SimulationTable[i].ArrivalTime >= system.Servers[l].FinishTime)
+                    if (system.SimulationTable[i].ArrivalTime  >= system.Servers[l].FinishTime)
                     {
                         system.SimulationTable[i].AssignedServer = system.Servers[l];
-
-                        system.SimulationTable[i].StartTime =
-                        system.SimulationTable[i].ArrivalTime;
+                        system.SimulationTable[i].StartTime =system.SimulationTable[i].ArrivalTime;
                         system.SimulationTable[i].TimeInQueue = 0;
                         break;
 
