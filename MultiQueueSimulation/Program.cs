@@ -26,7 +26,7 @@ namespace MultiQueueSimulation
             TimeDistribution  timed =new TimeDistribution();
             timed.Time = 1;
             timed.Probability =0.25m;
-            // AAAAAA ssssss
+            
             system.InterarrivalDistribution.Add(timed);
             timed = new TimeDistribution();
             timed.Time = 2;
