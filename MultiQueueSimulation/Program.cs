@@ -19,7 +19,7 @@ namespace MultiQueueSimulation
         {
             
             SimulationSystem system = new SimulationSystem();
-            system.NumberOfServers = 2;
+            system.NumberOfServers=2;
             system.StoppingNumber = 100;
             system.StoppingCriteria = Enums.StoppingCriteria.NumberOfCustomers;
             system.SelectionMethod = Enums.SelectionMethod.HighestPriority;
