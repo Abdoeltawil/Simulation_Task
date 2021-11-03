@@ -17,16 +17,16 @@ namespace MultiQueueSimulation
         [STAThread]
         static void Main()
         {
-            
+
             SimulationSystem system = new SimulationSystem();
-            system.NumberOfServers=2;
+            system.NumberOfServers = 2;
             system.StoppingNumber = 100;
             system.StoppingCriteria = Enums.StoppingCriteria.NumberOfCustomers;
             system.SelectionMethod = Enums.SelectionMethod.HighestPriority;
-            TimeDistribution  timed =new TimeDistribution();
+            TimeDistribution timed = new TimeDistribution();
             timed.Time = 1;
-            timed.Probability =0.25m;
-            
+            timed.Probability = 0.25m;
+
             system.InterarrivalDistribution.Add(timed);
             timed = new TimeDistribution();
             timed.Time = 2;
@@ -80,9 +80,9 @@ namespace MultiQueueSimulation
             system.Servers.Add(s);
             system.Servers[1].ID = 2;
             decimal sum = 0.00m;
-            for(int i=0;i<system.InterarrivalDistribution.Count;i++)
+            for (int i = 0; i < system.InterarrivalDistribution.Count; i++)
             {
-                system.InterarrivalDistribution[i].MinRange = (int)(sum * 100)+1;
+                system.InterarrivalDistribution[i].MinRange = (int)(sum * 100) + 1;
                 sum += system.InterarrivalDistribution[i].Probability;
                 system.InterarrivalDistribution[i].CummProbability = sum;
                 system.InterarrivalDistribution[i].MaxRange = (int)(sum * 100);
@@ -107,12 +107,12 @@ namespace MultiQueueSimulation
             decimal sumqu = 0.0m, countofq = 0.0m;
             decimal[] numofcustomer = new decimal[system.NumberOfServers];
             Queue<decimal> startcus = new Queue<decimal>(), endcus = new Queue<decimal>();
-            int [] endserver = new int[system.StoppingNumber];
-            for (int i=0;i< system.StoppingNumber; i++)
+            int[] endserver = new int[system.StoppingNumber];
+            for (int i = 0; i < system.StoppingNumber; i++)
             {
                 system.SimulationTable.Add(new SimulationCase(0, 0, 0, 0, 0, 0, null, 0, 0, 0));
-                system.SimulationTable[i].CustomerNumber = i+1;
-                system.SimulationTable[i].RandomInterArrival = new Random().Next(1,100);
+                system.SimulationTable[i].CustomerNumber = i + 1;
+                system.SimulationTable[i].RandomInterArrival = new Random().Next(1, 100);
                 for (int k = 0; k < system.InterarrivalDistribution.Count; k++)
                 {
                     if (system.SimulationTable[i].RandomInterArrival >= system.InterarrivalDistribution[k].MinRange && system.SimulationTable[i].RandomInterArrival <= system.InterarrivalDistribution[k].MaxRange)
@@ -126,27 +126,27 @@ namespace MultiQueueSimulation
                 {
                     system.SimulationTable[i].ArrivalTime = system.SimulationTable[i - 1].ArrivalTime + system.SimulationTable[i].InterArrival;
                 }
-                int min=1000;
-                    
+                int min = 1000;
+
                 for (int l = 0; l < system.Servers.Count; l++)
                 {
                     if (system.SimulationTable[i].ArrivalTime >= system.Servers[l].FinishTime)
                     {
                         system.SimulationTable[i].AssignedServer = system.Servers[l];
-                        
+
                         system.SimulationTable[i].StartTime =
                         system.SimulationTable[i].ArrivalTime;
                         system.SimulationTable[i].TimeInQueue = 0;
                         break;
-                        
+
                     }
-                  if(system.Servers[l].FinishTime<min)
+                    if (system.Servers[l].FinishTime < min)
                     {
                         min = system.Servers[l].FinishTime;
                         system.SimulationTable[i].AssignedServer = system.Servers[l];
                         system.SimulationTable[i].StartTime = system.SimulationTable[i].AssignedServer.FinishTime;
                         system.SimulationTable[i].TimeInQueue = system.SimulationTable[i].AssignedServer.FinishTime - system.SimulationTable[i].ArrivalTime;
-                        
+
                     }
                 }
 
@@ -160,15 +160,15 @@ namespace MultiQueueSimulation
                 system.SimulationTable[i].EndTime = system.SimulationTable[i].StartTime + system.SimulationTable[i].ServiceTime;
                 system.SimulationTable[i].AssignedServer.FinishTime = system.SimulationTable[i].EndTime;
                 system.SimulationTable[i].AssignedServer.TotalWorkingTime += system.SimulationTable[i].ServiceTime;
-                numofcustomer[system.SimulationTable[i].AssignedServer.ID - 1] = numofcustomer[system.SimulationTable[i].AssignedServer.ID - 1]+1;
+                numofcustomer[system.SimulationTable[i].AssignedServer.ID - 1] = numofcustomer[system.SimulationTable[i].AssignedServer.ID - 1] + 1;
                 sumqu += system.SimulationTable[i].TimeInQueue;
                 if (system.SimulationTable[i].TimeInQueue > 0)
                 {
                     countofq++;
                     startcus.Enqueue(system.SimulationTable[i].ArrivalTime);
-                    endcus.Enqueue(system.SimulationTable  [i].StartTime);
+                    endcus.Enqueue(system.SimulationTable[i].StartTime);
                 }
-               
+
             }
             for (int i = 0; i < system.NumberOfServers; i++)
             {
@@ -176,24 +176,24 @@ namespace MultiQueueSimulation
                 system.Servers[i].AverageServiceTime = (system.Servers[i].TotalWorkingTime) / numofcustomer[i];
                 system.Servers[i].Utilization = (system.Servers[i].TotalWorkingTime) / (decimal)system.SimulationTable[system.StoppingNumber - 1].EndTime;
             }
-            int count=0;
-            while(startcus.Count!=0&& endcus.Count != 0)
+            int count = 0;
+            while (startcus.Count != 0 && endcus.Count != 0)
             {
-                
-                    if(startcus.First()<endcus.First())
-                    {
-                        count++;
-                        startcus.Dequeue();
-                    }
-                    else
-                    {
-                        
-                        endcus.Dequeue();
-                        count--;
-                    }
-                
+
+                if (startcus.First() < endcus.First())
+                {
+                    count++;
+                    startcus.Dequeue();
+                }
+                else
+                {
+
+                    endcus.Dequeue();
+                    count--;
+                }
+
             }
-           
+
             system.PerformanceMeasures.AverageWaitingTime = (sumqu / system.StoppingNumber);
             system.PerformanceMeasures.WaitingProbability = countofq / system.StoppingNumber;
             system.PerformanceMeasures.MaxQueueLength = count;
@@ -202,7 +202,7 @@ namespace MultiQueueSimulation
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
-           
+
         }
     }
 }
