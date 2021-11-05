@@ -63,33 +63,33 @@ namespace MultiQueueSimulation
             }
             run.Enter_Data(NumberOfServers, StoppingNumber, StoppingCriteria, SelectionMethod);
             Dictionary<string,string>d = run.Enter_InterarrivalDistribution(count,time.Split('*'),prob.Split('*'));
-            time = "";
-            prob = "";
-            int temp = i;
             i++;
+            int temp = i;
             count = 0;
+            // MessageBox.Show(Lines[i]);
             while (Lines[i].Length != 0)
-                count++;
-            i = temp;
-            for (;i<Lines.Length;++i)
             {
+                count++;
                 i++;
-                for(int m =0;m<count;i++,++m)
+            }
+
+            i = temp;
+            for (;i<Lines.Length;)
+            {
+                time = "";
+                prob = "";
+                for (int m =0;m<count;i++,++m)
                 {
                     time += Lines[i][0] + "*";
                     prob += Lines[i].Substring(3) + "*";
                 }
-                i++;
+                i+=2;
                 d = run.Add_ServiceDistribution(count,time.Split('*'),prob.Split('*'));
             }
-
-
-
+            
             SimulationSystem system = run.run();
             string result = TestingManager.Test(system, test);
             MessageBox.Show(result);
-
-
             
         }
 
